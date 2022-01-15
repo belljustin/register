@@ -19,6 +19,18 @@ func Register(name string, driver ForexService) {
 	drivers[name] = driver
 }
 
+func Registered() []string {
+	driversMu.RLock()
+	defer driversMu.RUnlock()
+	registered := make([]string, len(drivers))
+	i := 0
+	for r, _ := range drivers {
+		registered[i] = r
+		i += 1
+	}
+	return registered
+}
+
 func Open(name string) ForexService {
 	return drivers[name]
 }
