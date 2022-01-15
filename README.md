@@ -9,7 +9,7 @@ This package must be used in conjunction with a database driver like `lib/pq` fo
 
 The documentation for `lib/pq` provides a handy example for getting started.
 
-```
+```go
 import (
 	"database/sql"
 
@@ -34,7 +34,7 @@ Why would we want to import a library if we don't plan on calling it?
 Well, the imported package still runs initialization meaning all variable declarations and `init()` functions are evaluated.
 If we inspect the `init()` of [pg/conn.go](https://github.com/lib/pq/blob/8446d16b8935fdf2b5c0fe333538ac395e3e1e4b/conn.go#L57-L59), we see it interacts with a `Register(...)` method in `database/sql`.
 
-```
+```go
 func init() {
 	sql.Register("postgres", &Driver{})
 }
@@ -43,7 +43,7 @@ func init() {
 This is handy because it provides our common interface of `database/sql` with a driver for postgres.
 If you check out the source for `sql.Register(...)`, you see it just stores that driver in map keyed by the provided string.
 
-```
+```go
 var (
 	driversMu sync.RWMutex // mutex protects the drivers map during concurrent access
 	drivers   = make(map[string]driver.Driver)
@@ -68,7 +68,7 @@ Of course we can copy this pattern to create our own interfaces and drivers that
 
 Here's a very simple interface to a foreign exchange (forex) service.
 
-```
+```go
 type Currency string
 
 const (
@@ -85,10 +85,10 @@ type ForexService interface {
 }
 ```
 
-I've implemented drivers for this interface using both fawazahmed0/currency-api and freeforexapi.
+I've implemented drivers for this interface using both [fawazahmed0/currency-api](https://github.com/fawazahmed0/currency-api) and [freeforexapi](https://freeforexapi.com/).
 Just like the database example in the standard lib, you can anonymously import one of the drivers and use the ForexService.
 
-```
+```go
 package main
 
 import (
@@ -110,13 +110,13 @@ func main() {
 Building the above creates an executable with fixed behaviour at compile time.
 However, the Go compiler also features a buildmode that creates a Go plugin.
 
-```
+```shell
 go build -buildmode=plugin -o ./bin/freeforex.so ./drivers/freeforex/plugin
 ```
 
 You can then load this plugin at runtime using the std lib.
 
-```
+```go
 plugin.Open("./bin/freeforex.so")
 ```
 
@@ -126,7 +126,7 @@ Without compiling or deploying the application, you can add new functionality.
 Though, it's worth noting if you try to re-open the same plugin path, it will simply return the existing path.
 Worse still, if you recompile the same package to another path and try to open that, it will result in an error.
 
-```
+```shell
 panic: plugin.Open("plugins/freeforexV2"): plugin already loaded
 ```
 
