@@ -1,6 +1,6 @@
 # Compiletime and Runtime drivers
 
-This post explores adding using and building drivers both at compiletime and runtime.
+This post explores adding and building drivers both at compiletime and runtime.
 
 # Go Register
 
